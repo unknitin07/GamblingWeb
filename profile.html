@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Stake Clone</title>
+  <style>
+    :root {
+      --bg-main: #0a0e1a;
+      --bg-dark: #060913;
+      --bg-card: #0d1117;
+      --text-primary: #e6edf3;
+      --text-secondary: #7d8590;
+      --accent-primary: #58a6ff;
+      --accent-gold: #f59e0b;
+      --accent-green: #3fb950;
+      --border: rgba(255, 255, 255, 0.1);
+      --glow: rgba(88, 166, 255, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(88, 166, 255, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0px, transparent 1px, transparent 2px, rgba(255, 255, 255, 0.02) 3px);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header {
+      background: rgba(10, 14, 26, 0.8);
+      backdrop-filter: blur(20px);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-brand {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent-primary);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .header-menu {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .profile-hero {
+      background: linear-gradient(180deg, rgba(10, 14, 26, 0.6) 0%, rgba(6, 9, 19, 0.4) 100%);
+      padding: 20px 16px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background: radial-gradient(ellipse at top, rgba(88, 166, 255, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .profile-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #ffa800 0%, #ff6b00 100%);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .user-id {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 168, 0, 0.15);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-gold);
+      width: fit-content;
+      margin-bottom: 6px;
+    }
+
+    .last-login {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .balance-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 
+        0 0 0 1px rgba(88, 166, 255, 0.1),
+        0 4px 24px -2px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .balance-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        var(--glow) 50%, 
+        transparent);
+      opacity: 0.6;
+    }
+
+    .balance-card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(88, 166, 255, 0.03) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .balance-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+    }
+
+    .balance-amount {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .refresh-btn {
+      background: rgba(88, 166, 255, 0.08);
+      border: 1px solid rgba(88, 166, 255, 0.2);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      color: var(--accent-primary);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .refresh-btn:active {
+      transform: scale(0.95);
+      background: rgba(88, 166, 255, 0.12);
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+
+    .action-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:active .action-icon {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .action-icon.wallet { 
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+    .action-icon.deposit { 
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+    .action-icon.withdraw { 
+      background: rgba(88, 166, 255, 0.08);
+      border-color: rgba(88, 166, 255, 0.2);
+    }
+
+    .action-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .content {
+      padding: 0 16px 80px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .menu-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: var(--text-primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .menu-card:active {
+      transform: scale(0.98);
+      background: rgba(13, 17, 23, 0.8);
+    }
+
+    .menu-card:active::before {
+      opacity: 1;
+    }
+
+    .menu-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .menu-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .menu-card-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      padding: 0 4px;
+      letter-spacing: -0.2px;
+    }
+
+    .menu-list {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: background 0.2s ease;
+    }
+
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+
+    .menu-item:active {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .menu-item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      flex-shrink: 0;
+    }
+
+    .menu-item-content {
+      flex: 1;
+    }
+
+    .menu-item-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .menu-item-arrow {
+      color: var(--text-secondary);
+      font-size: 18px;
+    }
+
+    .menu-item-badge {
+      background: #ff3b57;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-right: 8px;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .service-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: transform 0.2s ease;
+    }
+
+    .service-item:active {
+      transform: scale(0.95);
+    }
+
+    .service-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: rgba(88, 166, 255, 0.06);
+      border: 1px solid rgba(88, 166, 255, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .service-item:active .service-icon {
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .service-label {
+      font-size: 11px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 14px;
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 14px;
+      color: #ef4444;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      transition: all 0.2s ease;
+    }
+
+    .logout-btn:active {
+      transform: scale(0.98);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 14, 26, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 10px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item.active {
+      color: var(--accent-primary);
+    }
+
+    .nav-item:active {
+      transform: scale(0.95);
+    }
+
+    .nav-icon {
+      font-size: 22px;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-item.active .nav-icon {
+      transform: scale(1.1);
+    }
+
+    @media (min-width: 768px) {
+      .content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <a href="/" class="header-brand">Stake</a>
+    <div class="header-menu">☰</div>
+  </header>
+
+  <!-- Profile Hero -->
+  <div class="profile-hero">
+    <div class="profile-top">
+      <div class="avatar">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23667eea' width='100' height='100'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.35em' fill='white' font-size='40' font-weight='bold'%3EP%3C/text%3E%3C/svg%3E" alt="Profile">
+      </div>
+      <div class="profile-info">
+        <div class="vip-badge">
+          <span>👑</span>
+          <span>VIP3</span>
+        </div>
+        <div class="user-id">
+          <span>UID</span>
+          <span>|</span>
+          <span id="userId">833117</span>
+          <span>📋</span>
+        </div>
+        <div class="last-login" id="lastLogin">Last login: 2025-12-22 14:03:22</div>
+      </div>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="balance-card">
+      <div class="balance-label">Total balance</div>
+      <div class="balance-amount">
+        <span id="balance">₹0.02</span>
+        <button class="refresh-btn">🔄</button>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button class="action-btn" onclick="navigate('/wallet')">
+          <div class="action-icon wallet">👛</div>
+          <div class="action-label">Wallet</div>
+        </button>
+        <button class="action-btn" onclick="navigate('/deposit')">
+          <div class="action-icon deposit">💰</div>
+          <div class="action-label">Deposit</div>
+        </button>
+        <button class="action-btn" onclick="navigate('/withdraw')">
+          <div class="action-icon withdraw">💳</div>
+          <div class="action-label">Withdraw</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- History Cards Grid -->
+    <div class="menu-grid">
+      <a href="/game-history" class="menu-card">
+        <div class="menu-card-icon">📊</div>
+        <div class="menu-card-title">Game History</div>
+        <div class="menu-card-desc">My game history</div>
+      </a>
+      <a href="/transactions" class="menu-card">
+        <div class="menu-card-icon">💳</div>
+        <div class="menu-card-title">Transaction</div>
+        <div class="menu-card-desc">My transaction history</div>
+      </a>
+      <a href="/deposit-history" class="menu-card">
+        <div class="menu-card-icon">📥</div>
+        <div class="menu-card-title">Deposit</div>
+        <div class="menu-card-desc">My deposit history</div>
+      </a>
+      <a href="/withdraw-history" class="menu-card">
+        <div class="menu-card-icon">📤</div>
+        <div class="menu-card-title">Withdraw</div>
+        <div class="menu-card-desc">My withdraw history</div>
+      </a>
+    </div>
+
+    <!-- Menu List -->
+    <div class="menu-list">
+      <a href="/notifications" class="menu-item">
+        <div class="menu-item-icon">📬</div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">Notification</div>
+        </div>
+        <span class="menu-item-badge">96</span>
+        <span class="menu-item-arrow">›</span>
+      </a>
+      <a href="/gifts" class="menu-item">
+        <div class="menu-item-icon">🎁</div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">Gifts</div>
+        </div>
+        <span class="menu-item-arrow">›</span>
+      </a>
+      <a href="/statistics" class="menu-item">
+        <div class="menu-item-icon">📈</div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">Game statistics</div>
+        </div>
+        <span class="menu-item-arrow">›</span>
+      </a>
+      <a href="/language" class="menu-item">
+        <div class="menu-item-icon">🌐</div>
+        <div class="menu-item-content">
+          <div class="menu-item-title">Language</div>
+        </div>
+        <span style="color: var(--text-secondary); font-size: 13px; margin-right: 8px;">English</span>
+        <span class="menu-item-arrow">›</span>
+      </a>
+    </div>
+
+    <!-- Service Center -->
+    <div class="section-title">Service center</div>
+    <div class="service-grid">
+      <a href="/settings" class="service-item">
+        <div class="service-icon">⚙️</div>
+        <div class="service-label">Settings</div>
+      </a>
+      <a href="/feedback" class="service-item">
+        <div class="service-icon">💬</div>
+        <div class="service-label">Feedback</div>
+      </a>
+      <a href="/announcement" class="service-item">
+        <div class="service-icon">📢</div>
+        <div class="service-label">Announcement</div>
+      </a>
+      <a href="/customer-service" class="service-item">
+        <div class="service-icon">👤</div>
+        <div class="service-label">Customer Service</div>
+      </a>
+      <a href="/guide" class="service-item">
+        <div class="service-icon">📖</div>
+        <div class="service-label">Beginner's Guide</div>
+      </a>
+      <a href="/about" class="service-item">
+        <div class="service-icon">ℹ️</div>
+        <div class="service-label">About us</div>
+      </a>
+    </div>
+
+    <!-- Logout Button -->
+    <button class="logout-btn" onclick="logout()">
+      <span>🚪</span>
+      <span>Log out</span>
+    </button>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a href="/" class="nav-item">
+      <div class="nav-icon">🏠</div>
+      <div>Home</div>
+    </a>
+    <a href="/wallet" class="nav-item">
+      <div class="nav-icon">💼</div>
+      <div>Wallet</div>
+    </a>
+    <a href="/account" class="nav-item active">
+      <div class="nav-icon">👤</div>
+      <div>Account</div>
+    </a>
+  </div>
+
+  <script>
+    // API Configuration
+    const API_BASE_URL = 'https://api.yourdomain.com'; // Replace with your API endpoint
+    
+    // API Service
+    const API = {
+      async fetchProfile() {
+        try {
+          const token = sessionStorage.getItem('authToken');
+          if (!token) {
+            throw new Error('No authentication token');
+          }
+
+          const response = await fetch(`${API_BASE_URL}/api/profile`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch profile');
+          }
+
+          return await response.json();
+        } catch (error) {
+          console.error('API Error:', error);
+          // Return mock data for demo purposes
+          return {
+            success: true,
+            data: {
+              id: '833117',
+              username: 'Player123',
+              balance: 0.02,
+              lastLogin: '2025-12-22 14:03:22',
+              vipLevel: 3,
+              notificationCount: 96
+            }
+          };
+        }
+      },
+
+      async logout() {
+        try {
+          const token = sessionStorage.getItem('authToken');
+          
+          const response = await fetch(`${API_BASE_URL}/api/logout`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          return await response.json();
+        } catch (error) {
+          console.error('Logout Error:', error);
+          return { success: true };
+        }
+      }
+    };
+
+    // Load Profile Data
+    async function loadProfile() {
+      try {
+        // Show loading state
+        document.querySelector('.profile-hero').style.opacity = '0.5';
+        
+        const response = await API.fetchProfile();
+        
+        if (response.success && response.data) {
+          const user = response.data;
+          
+          // Update UI with fetched data
+          document.getElementById('userId').textContent = user.id;
+          document.getElementById('balance').textContent = `₹${user.balance.toFixed(2)}`;
+          document.getElementById('lastLogin').textContent = `Last login: ${user.lastLogin}`;
+          
+          // Update VIP badge if exists
+          const vipBadge = document.querySelector('.vip-badge span:last-child');
+          if (vipBadge) {
+            vipBadge.textContent = `VIP${user.vipLevel}`;
+          }
+
+          // Update notification badge
+          const notificationBadge = document.querySelector('.menu-item-badge');
+          if (notificationBadge && user.notificationCount) {
+            notificationBadge.textContent = user.notificationCount;
+          }
+          
+          // Update avatar
+          const avatarImg = document.querySelector('.avatar img');
+          if (user.avatarUrl) {
+            avatarImg.src = user.avatarUrl;
+          }
+        }
+        
+        // Remove loading state
+        document.querySelector('.profile-hero').style.opacity = '1';
+        
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+        alert('Failed to load profile data. Please refresh the page.');
+      }
+    }
+
+    // Navigation function
+    function navigate(path) {
+      window.location.href = path;
+    }
+
+    // Logout function
+    async function logout() {
+      if (confirm('Are you sure you want to log out?')) {
+        try {
+          await API.logout();
+          sessionStorage.clear();
+          localStorage.clear();
+          window.location.href = '/login';
+        } catch (error) {
+          console.error('Logout failed:', error);
+          alert('Logout failed. Please try again.');
+        }
+      }
+    }
+
+    // Refresh balance
+    async function refreshBalance() {
+      const refreshBtn = document.querySelector('.refresh-btn');
+      refreshBtn.style.transform = 'rotate(360deg)';
+      refreshBtn.style.transition = 'transform 0.5s';
+      
+      await loadProfile();
+      
+      setTimeout(() => {
+        refreshBtn.style.transform = 'rotate(0deg)';
+      }, 500);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check authentication
+      const token = sessionStorage.getItem('authToken');
+      if (!token) {
+        // For demo, set a mock token
+        sessionStorage.setItem('authToken', 'demo-token-12345');
+      }
+      
+      // Load profile data
+      loadProfile();
+      
+      // Add refresh button handler
+      document.querySelector('.refresh-btn').addEventListener('click', refreshBalance);
+    });
+
+    // Prevent default link behavior for demo
+    document.querySelectorAll('a[href^="/"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const path = link.getAttribute('href');
+        navigate(path);
+      });
+    });
+  </script>
+</body>
+</html>

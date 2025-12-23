@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deposit History - Stake Clone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #050810;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.06) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(34, 197, 94, 0.05) 0px, transparent 50%),
+        repeating-linear-gradient(45deg, transparent 0px, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px),
+        repeating-linear-gradient(-45deg, transparent 0px, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
+      background-attachment: fixed;
+      color: #e5e7eb;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* Header */
+    .header {
+      background: #1a1f2e;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: #38bdf8;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    /* Filter Section */
+    .filter-section {
+      padding: 20px;
+    }
+
+    .filter-card {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 12px rgba(56, 189, 248, 0.05),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .filter-label {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-row {
+      margin-bottom: 16px;
+    }
+
+    .filter-row:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Date Time Inputs */
+    .date-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .date-input-wrapper {
+      background: rgba(15, 20, 30, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25),
+                  0 0 8px rgba(56, 189, 248, 0.04),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .date-icon {
+      color: #38bdf8;
+      font-size: 16px;
+    }
+
+    .date-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #f3f4f6;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .date-input::-webkit-calendar-picker-indicator {
+      filter: invert(0.7);
+      cursor: pointer;
+    }
+
+    /* Method Filter */
+    .method-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .method-chip {
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #d1d5db;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2),
+                  0 0 6px rgba(56, 189, 248, 0.03);
+    }
+
+    .method-chip:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.3);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25),
+                  0 0 8px rgba(56, 189, 248, 0.06);
+    }
+
+    .method-chip.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      color: #38bdf8;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3),
+                  0 0 10px rgba(56, 189, 248, 0.12);
+    }
+
+    /* Filter Actions */
+    .filter-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .filter-btn {
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      border: none;
+    }
+
+    .reset-btn {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2),
+                  0 0 8px rgba(239, 68, 68, 0.05);
+    }
+
+    .reset-btn:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                  0 0 12px rgba(239, 68, 68, 0.08);
+    }
+
+    .apply-btn {
+      background: linear-gradient(135deg, #38bdf8, #10b981);
+      color: #0a0e13;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                  0 0 15px rgba(56, 189, 248, 0.12),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .apply-btn:hover {
+      background: linear-gradient(135deg, #22d3ee, #22c55e);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+                  0 0 20px rgba(56, 189, 248, 0.15),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Stats Summary */
+    .stats-summary {
+      padding: 0 20px 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat-item {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                  0 0 10px rgba(56, 189, 248, 0.05),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    /* History List */
+    .history-list {
+      padding: 0 20px;
+    }
+
+    .history-item {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 10px rgba(56, 189, 248, 0.04),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .status-badge {
+      background: #16a34a;
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+    }
+
+    .status-pending {
+      background: #f59e0b;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    }
+
+    .status-failed {
+      background: #dc2626;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    }
+
+    .amount-display {
+      font-size: 20px;
+      font-weight: 700;
+      color: #22c55e;
+    }
+
+    .history-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .detail-label {
+      color: #9ca3af;
+    }
+
+    .detail-value {
+      color: #f3f4f6;
+      font-weight: 600;
+    }
+
+    .order-number {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(56, 189, 248, 0.1);
+    }
+
+    .order-id {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .copy-icon {
+      color: #38bdf8;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-text {
+      font-size: 15px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+
+    .empty-subtext {
+      font-size: 13px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <button class="back-btn" onclick="window.history.back()">←</button>
+    <h1 class="header-title">Deposit History</h1>
+  </header>
+
+  <!-- Filter Section -->
+  <section class="filter-section">
+    <div class="filter-card">
+      <!-- Date Range Filter -->
+      <div class="filter-row">
+        <div class="filter-label">📅 Date Range</div>
+        <div class="date-inputs">
+          <div class="date-input-wrapper">
+            <span class="date-icon">📆</span>
+            <input type="date" class="date-input" id="startDate">
+          </div>
+          <div class="date-input-wrapper">
+            <span class="date-icon">📆</span>
+            <input type="date" class="date-input" id="endDate">
+          </div>
+        </div>
+      </div>
+
+      <!-- Method Filter -->
+      <div class="filter-row">
+        <div class="filter-label">💳 Payment Method</div>
+        <div class="method-chips">
+          <button class="method-chip active" data-method="all" onclick="selectMethod('all')">All</button>
+          <button class="method-chip" data-method="PAYTM" onclick="selectMethod('PAYTM')">PAYTM</button>
+          <button class="method-chip" data-method="UPI" onclick="selectMethod('UPI')">UPI</button>
+          <button class="method-chip" data-method="USDT" onclick="selectMethod('USDT')">USDT</button>
+          <button class="method-chip" data-method="Bank Card" onclick="selectMethod('Bank Card')">Bank Card</button>
+        </div>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="filter-row">
+        <div class="filter-label">🎯 Status</div>
+        <div class="method-chips">
+          <button class="method-chip active" data-status="all" onclick="selectStatus('all')">All</button>
+          <button class="method-chip" data-status="completed" onclick="selectStatus('completed')">Completed</button>
+          <button class="method-chip" data-status="pending" onclick="selectStatus('pending')">Pending</button>
+          <button class="method-chip" data-status="failed" onclick="selectStatus('failed')">Failed</button>
+        </div>
+      </div>
+
+      <!-- Filter Actions -->
+      <div class="filter-actions">
+        <button class="filter-btn reset-btn" onclick="resetFilters()">Reset</button>
+        <button class="filter-btn apply-btn" onclick="applyFilters()">Apply Filters</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Summary -->
+  <section class="stats-summary">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value" id="totalDeposits">24</div>
+        <div class="stat-label">Total Deposits</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalAmount">₹2,45,150</div>
+        <div class="stat-label">Total Amount</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="successRate">95.8%</div>
+        <div class="stat-label">Success Rate</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- History List -->
+  <section class="history-list" id="historyList">
+    <div class="history-item">
+      <div class="history-header">
+        <span class="status-badge">Completed</span>
+        <span class="amount-display">₹10,500.00</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Method</span>
+          <span class="detail-value">PAYTM</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Channel</span>
+          <span class="detail-value">PAYTM-7DAY</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Date</span>
+          <span class="detail-value">2025-12-23</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">14:32:15</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">DP20251223143215982746A3b</span>
+          <span class="copy-icon" onclick="copyOrderNumber('DP20251223143215982746A3b')">📋</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-header">
+        <span class="status-badge status-pending">Pending</span>
+        <span class="amount-display">₹5,000.00</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Method</span>
+          <span class="detail-value">UPI</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Channel</span>
+          <span class="detail-value">UPI-QR</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Date</span>
+          <span class="detail-value">2025-12-23</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">12:18:42</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">DP20251223121842746392B2c</span>
+          <span class="copy-icon" onclick="copyOrderNumber('DP20251223121842746392B2c')">📋</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-header">
+        <span class="status-badge">Completed</span>
+        <span class="amount-display">₹15,000.00</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Method</span>
+          <span class="detail-value">USDT</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Channel</span>
+          <span class="detail-value">USDT-TRC20</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Date</span>
+          <span class="detail-value">2025-12-22</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">18:45:30</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">DP20251222184530293847C4d</span>
+          <span class="copy-icon" onclick="copyOrderNumber('DP20251222184530293847C4d')">📋</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-header">
+        <span class="status-badge">Completed</span>
+        <span class="amount-display">₹20,000.00</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Method</span>
+          <span class="detail-value">Bank Card</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Channel</span>
+          <span class="detail-value">HDFC-Direct</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Date</span>
+          <span class="detail-value">2025-12-21</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">09:22:11</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">DP20251221092211847392D5e</span>
+          <span class="copy-icon" onclick="copyOrderNumber('DP20251221092211847392D5e')">📋</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-header">
+        <span class="status-badge status-failed">Failed</span>
+        <span class="amount-display">₹8,500.00</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Method</span>
+          <span class="detail-value">PAYTM</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Channel</span>
+          <span class="detail-value">PAYTM-RUJIA</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Date</span>
+          <span class="detail-value">2025-12-20</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">16:55:48</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">DP20251220165548938472E6f</span>
+          <span class="copy-icon" onclick="copyOrderNumber('DP20251220165548938472E6f')">📋</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-header">
+        <span class="status-badge">Completed</span>
+        <span class="amount-display">₹12,300.00</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Method</span>
+          <span class="detail-value">UPI</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Channel</span>
+          <span class="detail-value">UPI-QR</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Date</span>
+          <span class="detail-value">2025-12-19</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">11:30:25</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">DP20251219113025746382F7g</span>
+          <span class="copy-icon" onclick="copyOrderNumber('DP20251219113025746382F7g')">📋</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    let selectedMethod = 'all';
+    let selectedStatus = 'all';
+
+    function selectMethod(method) {
+      selectedMethod = method;
+      document.querySelectorAll('[data-method]').forEach(el => {
+        el.classList.remove('active');
+      });
+      document.querySelector(`[data-method="${method}"]`).classList.add('active');
+    }
+
+    function selectStatus(status) {
+      selectedStatus = status;
+      document.querySelectorAll('[data-status]').forEach(el => {
+        el.classList.remove('active');
+      });
+      document.querySelector(`[data-status="${status}"]`).classList.add('active');
+    }
+
+    function resetFilters() {
+      document.getElementById('startDate').value = '';
+      document.getElementById('endDate').value = '';
+      selectMethod('all');
+      selectStatus('all');
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      
+      let message = 'Filters Applied:\n';
+      if (startDate) message += `Start Date: ${startDate}\n`;
+      if (endDate) message += `End Date: ${endDate}\n`;
+      message += `Method: ${selectedMethod}\n`;
+      message += `Status: ${selectedStatus}`;
+      
+      alert(message);
+      // Here you would typically filter the actual data
+    }
+
+    function copyOrderNumber(orderId) {
+      navigator.clipboard.writeText(orderId).then(() => {
+        alert('Order number copied to clipboard!');
+      });
+    }
+
+    // Set default dates (last 7 days)
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      const lastWeek = new Date(today);
+      lastWeek.setDate(today.getDate() - 7);
+      
+      document.getElementById('endDate').valueAsDate = today;
+      document.getElementById('startDate').valueAsDate = lastWeek;
+    });
+  </script>
+</body>
+</html>

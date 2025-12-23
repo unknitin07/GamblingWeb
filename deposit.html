@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deposit - Stake Clone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #050810;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.06) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(34, 197, 94, 0.05) 0px, transparent 50%),
+        repeating-linear-gradient(45deg, transparent 0px, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px),
+        repeating-linear-gradient(-45deg, transparent 0px, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
+      background-attachment: fixed;
+      color: #e5e7eb;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* Header */
+    .header {
+      background: rgba(26, 31, 46, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .back-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    .history-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.1);
+    }
+
+    .history-link:hover {
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transform: translateY(-1px);
+    }
+
+    /* Balance Card */
+    .balance-card {
+      margin: 20px;
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 16px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .balance-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .balance-label {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .balance-amount {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .refresh-icon {
+      font-size: 18px;
+      color: #38bdf8;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .refresh-icon:hover {
+      transform: scale(1.1);
+    }
+
+    .card-chip {
+      position: absolute;
+      bottom: 20px;
+      left: 24px;
+      width: 40px;
+      height: 30px;
+      background: rgba(156, 163, 175, 0.2);
+      border-radius: 4px;
+    }
+
+    .card-number {
+      position: absolute;
+      bottom: 20px;
+      right: 24px;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      color: #6b7280;
+    }
+
+    /* Payment Methods */
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 0 20px 20px;
+    }
+
+    .payment-method {
+      background: rgba(26, 31, 46, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 12px;
+      padding: 16px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .payment-method:hover {
+      background: rgba(36, 41, 56, 0.8);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .payment-method.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .payment-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(56, 189, 248, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .payment-method:hover .payment-icon {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transform: scale(1.05);
+    }
+
+    .payment-method.active .payment-icon {
+      background: rgba(56, 189, 248, 0.25);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .payment-name {
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      color: #d1d5db;
+    }
+
+    /* Section */
+    .section {
+      padding: 0 20px 24px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-icon {
+      font-size: 24px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    /* Channel Selection */
+    .channels {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .channel {
+      background: rgba(26, 31, 46, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 12px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .channel:hover {
+      background: rgba(36, 41, 56, 0.8);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .channel.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .channel-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #f3f4f6;
+    }
+
+    .channel-balance {
+      font-size: 12px;
+      color: #38bdf8;
+    }
+
+    /* Amount Selection */
+    .amounts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .amount-btn {
+      background: rgba(26, 31, 46, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      color: #d1d5db;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .amount-btn:hover {
+      background: rgba(36, 41, 56, 0.8);
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .amount-btn.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      color: #38bdf8;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Custom Amount Input */
+    .custom-amount {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(26, 31, 46, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-top: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .custom-amount:focus-within {
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .rupee-symbol {
+      font-size: 18px;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .amount-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #f3f4f6;
+      font-size: 15px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .amount-input::placeholder {
+      color: #6b7280;
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .amount-range {
+      font-size: 11px;
+      color: #6b7280;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+
+    /* Instructions */
+    .instructions {
+      background: rgba(26, 31, 46, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .instruction-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #9ca3af;
+    }
+
+    .instruction-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .bullet {
+      color: #38bdf8;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* Bottom Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(26, 31, 46, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(56, 189, 248, 0.1);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .method-selected {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .method-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 4px;
+      color: #f3f4f6;
+    }
+
+    .deposit-btn {
+      background: linear-gradient(135deg, #38bdf8, #10b981);
+      border: none;
+      border-radius: 12px;
+      padding: 14px 32px;
+      color: #0a0e13;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 
+        0 4px 16px rgba(56, 189, 248, 0.4),
+        0 0 30px rgba(16, 185, 129, 0.3);
+    }
+
+    .deposit-btn:hover {
+      background: linear-gradient(135deg, #22d3ee, #22c55e);
+      transform: translateY(-2px);
+      box-shadow: 
+        0 8px 24px rgba(56, 189, 248, 0.5),
+        0 0 40px rgba(16, 185, 129, 0.4);
+    }
+
+    .deposit-btn:active {
+      transform: translateY(0);
+    }
+
+    .deposit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="window.history.back()">←</button>
+      <h1 class="header-title">Deposit</h1>
+    </div>
+    <a href="#" class="history-link" onclick="alert('Deposit history coming soon!'); return false;">Deposit history</a>
+  </header>
+
+  <!-- Balance Card -->
+  <div class="balance-card">
+    <div class="balance-label">
+      💰 Balance
+    </div>
+    <div class="balance-amount">
+      ₹<span id="balanceAmount">1,25,050.36</span>
+      <span class="refresh-icon" onclick="refreshBalance()">🔄</span>
+    </div>
+    <div class="card-chip"></div>
+    <div class="card-number">•••• ••••</div>
+  </div>
+
+  <!-- Payment Methods -->
+  <div class="payment-methods">
+    <div class="payment-method" onclick="selectPayment('UPI-QR')">
+      <div class="payment-icon">📱</div>
+      <div class="payment-name">UPI-QR</div>
+    </div>
+    <div class="payment-method" onclick="selectPayment('Innate UPI-QR')">
+      <div class="payment-icon">💳</div>
+      <div class="payment-name">Innate UPI-QR</div>
+    </div>
+    <div class="payment-method active" onclick="selectPayment('PAYTM')">
+      <div class="payment-icon">🎯</div>
+      <div class="payment-name">PAYTM</div>
+    </div>
+    <div class="payment-method" onclick="selectPayment('Expert UPI-QR')">
+      <div class="payment-icon">🔷</div>
+      <div class="payment-name">Expert UPI-QR</div>
+    </div>
+    <div class="payment-method" onclick="selectPayment('USDT')">
+      <div class="payment-icon">🪙</div>
+      <div class="payment-name">USDT</div>
+    </div>
+    <div class="payment-method" onclick="selectPayment('ARPay')">
+      <div class="payment-icon">⚡</div>
+      <div class="payment-name">ARPay</div>
+    </div>
+  </div>
+
+  <!-- Select Channel -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">✏️</span>
+      <h2 class="section-title">Select channel</h2>
+    </div>
+    <div class="channels">
+      <div class="channel active" onclick="selectChannel('PAYTM-7DAY')">
+        <div class="channel-name">PAYTM-7DAY</div>
+        <div class="channel-balance">Balance: 200 - 50K</div>
+      </div>
+      <div class="channel" onclick="selectChannel('PAYTM-RUJIA')">
+        <div class="channel-name">PAYTM-RUJIA</div>
+        <div class="channel-balance">Balance: 200 - 50K</div>
+      </div>
+      <div class="channel" onclick="selectChannel('PAYTM-Umoney')">
+        <div class="channel-name">PAYTM-Umoney</div>
+        <div class="channel-balance">Balance: 100 - 10K</div>
+      </div>
+      <div class="channel" onclick="selectChannel('PAYTM-WePay')">
+        <div class="channel-name">PAYTM-WePay</div>
+        <div class="channel-balance">Balance: 100 - 10K</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deposit Amount -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">💵</span>
+      <h2 class="section-title">Deposit amount</h2>
+    </div>
+    <div class="amounts">
+      <button class="amount-btn" onclick="selectAmount(200)">₹ 200</button>
+      <button class="amount-btn" onclick="selectAmount(500)">₹ 500</button>
+      <button class="amount-btn" onclick="selectAmount(800)">₹ 800</button>
+      <button class="amount-btn" onclick="selectAmount(1000)">₹ 1K</button>
+      <button class="amount-btn" onclick="selectAmount(2000)">₹ 2K</button>
+      <button class="amount-btn" onclick="selectAmount(3000)">₹ 3K</button>
+      <button class="amount-btn" onclick="selectAmount(5000)">₹ 5K</button>
+      <button class="amount-btn" onclick="selectAmount(10000)">₹ 10K</button>
+      <button class="amount-btn" onclick="selectAmount(20000)">₹ 20K</button>
+      <button class="amount-btn" onclick="selectAmount(30000)">₹ 30K</button>
+      <button class="amount-btn" onclick="selectAmount(40000)">₹ 40K</button>
+      <button class="amount-btn" onclick="selectAmount(50000)">₹ 50K</button>
+    </div>
+    <div class="custom-amount">
+      <span class="rupee-symbol">₹</span>
+      <input type="number" class="amount-input" id="customAmount" placeholder="Enter amount" min="200" max="50000">
+      <button class="clear-btn" onclick="clearAmount()">✕</button>
+      <span class="amount-range">₹200.00 - ₹50,000.00</span>
+    </div>
+  </section>
+
+  <!-- Instructions -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-icon">📖</span>
+      <h2 class="section-title">Recharge instructions</h2>
+    </div>
+    <div class="instructions">
+      <div class="instruction-item">
+        <span class="bullet">◆</span>
+        <span>If the transfer time is up, please fill out the deposit form again.</span>
+      </div>
+      <div class="instruction-item">
+        <span class="bullet">◆</span>
+        <span>The transfer amount must match the order you created, otherwise the money cannot be credited successfully.</span>
+      </div>
+      <div class="instruction-item">
+        <span class="bullet">◆</span>
+        <span>If you transfer the wrong amount, our company will not be responsible for the lost amount!</span>
+      </div>
+      <div class="instruction-item">
+        <span class="bullet">◆</span>
+        <span>Note: do not cancel the deposit order after the money has been transferred.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <div>
+      <div class="method-selected">Recharge Method:</div>
+      <div class="method-name" id="selectedMethod">PAYTM-7DAY</div>
+    </div>
+    <button class="deposit-btn" onclick="processDeposit()">Deposit</button>
+  </div>
+
+  <script>
+    let selectedPaymentMethod = 'PAYTM';
+    let selectedChannelName = 'PAYTM-7DAY';
+    let selectedAmountValue = 0;
+
+    function selectPayment(method) {
+      selectedPaymentMethod = method;
+      document.querySelectorAll('.payment-method').forEach(el => {
+        el.classList.remove('active');
+      });
+      event.target.closest('.payment-method').classList.add('active');
+    }
+
+    function selectChannel(channel) {
+      selectedChannelName = channel;
+      document.getElementById('selectedMethod').textContent = channel;
+      document.querySelectorAll('.channel').forEach(el => {
+        el.classList.remove('active');
+      });
+      event.target.closest('.channel').classList.add('active');
+    }
+
+    function selectAmount(amount) {
+      selectedAmountValue = amount;
+      document.getElementById('customAmount').value = amount;
+      document.querySelectorAll('.amount-btn').forEach(el => {
+        el.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+
+    function clearAmount() {
+      selectedAmountValue = 0;
+      document.getElementById('customAmount').value = '';
+      document.querySelectorAll('.amount-btn').forEach(el => {
+        el.classList.remove('active');
+      });
+    }
+
+    function refreshBalance() {
+      const icon = event.target;
+      icon.style.transform = 'rotate(360deg)';
+      icon.style.transition = 'transform 0.5s ease';
+      setTimeout(() => {
+        icon.style.transform = 'rotate(0deg)';
+      }, 500);
+      alert('Balance refreshed!');
+    }
+
+    function processDeposit() {
+      const amount = document.getElementById('customAmount').value || selectedAmountValue;
+      
+      if (!amount || amount < 200) {
+        alert('Please enter a valid amount (minimum ₹200)');
+        return;
+      }
+
+      if (amount > 50000) {
+        alert('Maximum deposit amount is ₹50,000');
+        return;
+      }
+
+      alert(`Processing deposit of ₹${amount.toLocaleString('en-IN')} via ${selectedChannelName}`);
+    }
+
+    // Update custom amount on input
+    document.getElementById('customAmount').addEventListener('input', function() {
+      selectedAmountValue = this.value;
+      document.querySelectorAll('.amount-btn').forEach(el => {
+        el.classList.remove('active');
+      });
+    });
+  </script>
+</body>
+</html>

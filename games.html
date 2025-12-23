@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games - Stake Clone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #0a0e17;
+      color: #e5e7eb;
+      min-height: 100vh;
+      padding-bottom: 70px;
+    }
+
+    /* Header */
+    .header {
+      background: #1a1f2e;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #38bdf8, #a855f7);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+    }
+
+    .logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px;
+    }
+
+    .back-btn {
+      display: none;
+    }
+
+    .header-title {
+      display: none;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .balance-display {
+      background: rgba(15, 20, 30, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2),
+                  0 0 6px rgba(56, 189, 248, 0.04);
+    }
+
+    .wallet-icon {
+      font-size: 14px;
+    }
+
+    .header-btn {
+      background: linear-gradient(135deg, #38bdf8, #10b981);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: #0a0e13;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2),
+                  0 0 6px rgba(56, 189, 248, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .header-btn:hover {
+      background: linear-gradient(135deg, #22d3ee, #22c55e);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+                  0 0 10px rgba(56, 189, 248, 0.12);
+    }
+
+    .header-btn.withdraw {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+    }
+
+    .header-btn.withdraw:hover {
+      background: linear-gradient(135deg, #fbbf24, #f87171);
+    }
+
+    .search-icon {
+      color: #38bdf8;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15, 20, 30, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25),
+                  0 0 8px rgba(56, 189, 248, 0.04),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .search-bar.active {
+      display: flex;
+    }
+
+    .search-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #f3f4f6;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .search-input::placeholder {
+      color: #6b7280;
+    }
+
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 16px 20px 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .category-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-tab {
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-size: 13px;
+      color: #d1d5db;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2),
+                  0 0 6px rgba(56, 189, 248, 0.03);
+    }
+
+    .category-tab:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.3);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25),
+                  0 0 8px rgba(56, 189, 248, 0.06);
+    }
+
+    .category-tab.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      color: #38bdf8;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3),
+                  0 0 10px rgba(56, 189, 248, 0.12);
+    }
+
+    /* Games Grid */
+    .games-section {
+      padding: 20px;
+      padding-bottom: 20px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      margin-top: 8px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    .view-all {
+      font-size: 13px;
+      color: #38bdf8;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .game-card {
+      background: #1e2537;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                  0 0 20px rgba(56, 189, 248, 0.2);
+    }
+
+    .game-thumbnail {
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(168, 85, 247, 0.1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-thumbnail::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(56, 189, 248, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .game-card:hover .game-thumbnail::before {
+      opacity: 1;
+    }
+
+    .game-info {
+      padding: 12px;
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .game-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    .game-badge {
+      background: linear-gradient(135deg, #38bdf8, #10b981);
+      color: #0a0e13;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+    }
+
+    .game-badge.hot {
+      background: linear-gradient(135deg, #ef4444, #f59e0b);
+    }
+
+    .game-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Featured Game */
+    .featured-game {
+      background: #1e2537;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 32px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .featured-banner {
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      position: relative;
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+
+    .featured-info {
+      padding: 16px;
+    }
+
+    .featured-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f3f4f6;
+      margin-bottom: 8px;
+    }
+
+    .featured-desc {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .featured-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .featured-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .play-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #38bdf8, #10b981);
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      color: #0a0e13;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                  0 0 15px rgba(56, 189, 248, 0.12),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .play-btn:hover {
+      background: linear-gradient(135deg, #22d3ee, #22c55e);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+                  0 0 20px rgba(56, 189, 248, 0.15),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Provider Section */
+    .provider-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .provider-card {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                  0 0 10px rgba(56, 189, 248, 0.04),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .provider-card:hover {
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+                  0 0 15px rgba(56, 189, 248, 0.08),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .provider-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2),
+                  0 0 8px rgba(56, 189, 248, 0.1),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .provider-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #d1d5db;
+      text-align: center;
+    }
+
+    .provider-count {
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+    /* Live Wins Ticker */
+    .live-wins-section {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 8px;
+      margin-bottom: 0;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 12px rgba(56, 189, 248, 0.05),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .live-wins-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .live-indicator {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .live-wins-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    .wins-container {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      max-height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .win-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: rgba(15, 20, 30, 0.6);
+      border-radius: 8px;
+      border-left: 2px solid transparent;
+      animation: slideInFromBottom 0.5s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes slideInFromBottom {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .win-item.big-win {
+      border-left-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.05);
+    }
+
+    .win-item.mega-win {
+      border-left-color: #ef4444;
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .win-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .win-player {
+      font-size: 13px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    .win-user-id {
+      font-size: 10px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .win-game {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .win-amount {
+      font-size: 14px;
+      font-weight: 700;
+      color: #22c55e;
+    }
+
+    .win-amount.big {
+      color: #f59e0b;
+    }
+
+    .win-amount.mega {
+      color: #ef4444;
+    }
+
+    @media (max-width: 768px) {
+      .header-right {
+        gap: 4px;
+      }
+
+      .balance-display {
+        font-size: 11px;
+        padding: 6px 8px;
+      }
+
+      .header-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+
+      .provider-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1a1f2e;
+      border-top: 1px solid rgba(56, 189, 248, 0.15);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px 0 12px 0;
+      z-index: 100;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4),
+                  0 0 15px rgba(56, 189, 248, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #9ca3af;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: rgba(56, 189, 248, 0.1);
+      color: #38bdf8;
+    }
+
+    .nav-icon {
+      font-size: 20px;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* Jackpot Banner */
+    .jackpot-banner {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(245, 158, 11, 0.1));
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 20px rgba(239, 68, 68, 0.08),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      animation: jackpotPulse 2s infinite;
+    }
+
+    @keyframes jackpotPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(239, 68, 68, 0.08); }
+      50% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 30px rgba(239, 68, 68, 0.15); }
+    }
+
+    .jackpot-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .jackpot-icon {
+      font-size: 40px;
+    }
+
+    .jackpot-text h3 {
+      font-size: 14px;
+      color: #f3f4f6;
+      margin-bottom: 4px;
+    }
+
+    .jackpot-amount {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ef4444, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .jackpot-btn {
+      background: linear-gradient(135deg, #ef4444, #f59e0b);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .jackpot-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Tournament Banner */
+    .tournament-banner {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(56, 189, 248, 0.1));
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 15px rgba(168, 85, 247, 0.08),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .tournament-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .tournament-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f3f4f6;
+    }
+
+    .tournament-badge {
+      background: linear-gradient(135deg, #a855f7, #38bdf8);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .tournament-prize {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a855f7, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .tournament-desc {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 12px;
+    }
+
+    .tournament-progress {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #a855f7, #38bdf8);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .join-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #a855f7, #38bdf8);
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .join-btn:hover {
+      box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <div class="header-left">
+        <a href="#" class="logo">
+          <div class="logo-icon">💎</div>
+          <span class="logo-text">STAKE</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <div class="balance-display" id="headerBalance">
+          <span class="wallet-icon">💰</span>
+          <span>₹1,25,050.36</span>
+        </div>
+        <button class="header-btn" onclick="window.location.href='#deposit'">Deposit</button>
+        <button class="header-btn withdraw" onclick="window.location.href='#withdraw'">Withdraw</button>
+        <span class="search-icon" onclick="toggleSearch()">🔍</span>
+      </div>
+    </div>
+    <div class="search-bar" id="searchBar">
+      <span>🔍</span>
+      <input type="text" class="search-input" placeholder="Search games..." id="searchInput">
+    </div>
+  </header>
+
+  <!-- Category Tabs -->
+  <div class="category-tabs">
+    <button class="category-tab active" onclick="selectCategory('All')">🎮 All Games</button>
+    <button class="category-tab" onclick="selectCategory('Popular')">🔥 Popular</button>
+    <button class="category-tab" onclick="selectCategory('New')">✨ New</button>
+    <button class="category-tab" onclick="selectCategory('Slots')">🎰 Slots</button>
+    <button class="category-tab" onclick="selectCategory('Live')">📺 Live Casino</button>
+    <button class="category-tab" onclick="selectCategory('Table')">🃏 Table Games</button>
+    <button class="category-tab" onclick="selectCategory('Originals')">⭐ Originals</button>
+  </div>
+
+  <!-- Games Section -->
+  <section class="games-section">
+    <!-- Jackpot Banner -->
+    <div class="jackpot-banner">
+      <div class="jackpot-info">
+        <div class="jackpot-icon">💰</div>
+        <div class="jackpot-text">
+          <h3>Progressive Jackpot</h3>
+          <div class="jackpot-amount" id="jackpotAmount">₹12,45,890.50</div>
+        </div>
+      </div>
+      <button class="jackpot-btn" onclick="playGame('Jackpot')">Play Now</button>
+    </div>
+
+    <!-- Tournament Banner -->
+    <div class="tournament-banner">
+      <div class="tournament-header">
+        <h3 class="tournament-title">🏆 Weekly Tournament</h3>
+        <span class="tournament-badge">LIVE</span>
+      </div>
+      <div class="tournament-prize">₹5,00,000 Prize Pool</div>
+      <div class="tournament-desc">Compete with players worldwide. Top 100 players win prizes!</div>
+      <div class="tournament-progress">
+        <span>1,247 / 2,000 Players</span>
+        <span>2d 14h remaining</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 62%;"></div>
+      </div>
+      <button class="join-btn" onclick="alert('Tournament registration coming soon!')">Join Tournament</button>
+    </div>
+
+    <!-- Featured Game -->
+    <div class="featured-game" onclick="playGame('Mega Fortune Wheel')">
+      <div class="featured-banner">
+        🎡
+        <span class="featured-badge">FEATURED</span>
+      </div>
+      <div class="featured-info">
+        <h2 class="featured-title">Mega Fortune Wheel</h2>
+        <p class="featured-desc">Spin the wheel and win massive prizes! Progressive jackpot currently at ₹12,50,000</p>
+        <div class="featured-stats">
+          <div class="featured-stat">
+            <span class="stat-label">Players</span>
+            <span class="stat-value">2,847</span>
+          </div>
+          <div class="featured-stat">
+            <span class="stat-label">Max Win</span>
+            <span class="stat-value">1000x</span>
+          </div>
+          <div class="featured-stat">
+            <span class="stat-label">RTP</span>
+            <span class="stat-value">96.5%</span>
+          </div>
+        </div>
+        <button class="play-btn">Play Now</button>
+      </div>
+    </div>
+
+    <!-- Popular Games -->
+    <div class="section-header">
+      <h2 class="section-title">🔥 Popular Games</h2>
+      <a href="#" class="view-all" onclick="return false;">View All</a>
+    </div>
+    <div class="games-grid">
+      <div class="game-card" onclick="playGame('Crash')">
+        <div class="game-thumbnail">🚀</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Crash</span>
+            <span class="game-badge hot">HOT</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 1,234</span>
+            <span class="stat-item">💰 98.5%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="playGame('Dice')">
+        <div class="game-thumbnail">🎲</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Dice</span>
+            <span class="game-badge">NEW</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 856</span>
+            <span class="stat-item">💰 99.0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="playGame('Mines')">
+        <div class="game-thumbnail">💣</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Mines</span>
+            <span class="game-badge hot">HOT</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 642</span>
+            <span class="stat-item">💰 97.0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="playGame('Plinko')">
+        <div class="game-thumbnail">🎯</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Plinko</span>
+            <span class="game-badge">NEW</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 523</span>
+            <span class="stat-item">💰 98.0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="playGame('Roulette')">
+        <div class="game-thumbnail">🎰</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Roulette</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 892</span>
+            <span class="stat-item">💰 97.3%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="playGame('Blackjack')">
+        <div class="game-thumbnail">🃏</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Blackjack</span>
+            <span class="game-badge hot">HOT</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 765</span>
+            <span class="stat-item">💰 99.5%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slots -->
+    <div class="section-header">
+      <h2 class="section-title">🎰 Slot Games</h2>
+      <a href="#" class="view-all" onclick="return false;">View All</a>
+    </div>
+    <div class="games-grid">
+      <div class="game-card" onclick="playGame('Book of Ra')">
+        <div class="game-thumbnail">📚</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Book of Ra</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 445</span>
+            <span class="stat-item">💰 96.0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="playGame('Starburst')">
+        <div class="game-thumbnail">⭐</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Starburst</span>
+            <span class="game-badge">NEW</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 578</span>
+            <span class="stat-item">💰 96.1%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="playGame('Mega Moolah')">
+        <div class="game-thumbnail">🦁</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Mega Moolah</span>
+            <span class="game-badge hot">HOT</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 691</span>
+            <span class="stat-item">💰 88.1%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="playGame('Gonzo Quest')">
+        <div class="game-thumbnail">🗿</div>
+        <div class="game-info">
+          <div class="game-header">
+            <span class="game-name">Gonzo Quest</span>
+          </div>
+          <div class="game-stats">
+            <span class="stat-item">👥 412</span>
+            <span class="stat-item">💰 95.9%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Providers -->
+    <div class="section-header">
+      <h2 class="section-title">🎯 Game Providers</h2>
+      <a href="#" class="view-all" onclick="return false;">View All</a>
+    </div>
+    <div class="provider-grid">
+      <div class="provider-card" onclick="alert('Evolution Gaming - Coming Soon!')">
+        <div class="provider-icon">🎮</div>
+        <div class="provider-name">Evolution</div>
+        <div class="provider-count">45 games</div>
+      </div>
+
+      <div class="provider-card" onclick="alert('NetEnt - Coming Soon!')">
+        <div class="provider-icon">🎰</div>
+        <div class="provider-name">NetEnt</div>
+        <div class="provider-count">38 games</div>
+      </div>
+
+      <div class="provider-card" onclick="alert('Pragmatic Play - Coming Soon!')">
+        <div class="provider-icon">⚡</div>
+        <div class="provider-name">Pragmatic</div>
+        <div class="provider-count">52 games</div>
+      </div>
+
+      <div class="provider-card" onclick="alert('Microgaming - Coming Soon!')">
+        <div class="provider-icon">🎲</div>
+        <div class="provider-name">Microgaming</div>
+        <div class="provider-count">41 games</div>
+      </div>
+
+      <div class="provider-card" onclick="alert('Play\'n GO - Coming Soon!')">
+        <div class="provider-icon">🎪</div>
+        <div class="provider-name">Play'n GO</div>
+        <div class="provider-count">36 games</div>
+      </div>
+
+      <div class="provider-card" onclick="alert('Red Tiger - Coming Soon!')">
+        <div class="provider-icon">🐯</div>
+        <div class="provider-name">Red Tiger</div>
+        <div class="provider-count">29 games</div>
+      </div>
+
+      <div class="provider-card" onclick="alert('Yggdrasil - Coming Soon!')">
+        <div class="provider-icon">🌳</div>
+        <div class="provider-name">Yggdrasil</div>
+        <div class="provider-count">24 games</div>
+      </div>
+
+      <div class="provider-card" onclick="alert('Quickspin - Coming Soon!')">
+        <div class="provider-icon">⚙️</div>
+        <div class="provider-name">Quickspin</div>
+        <div class="provider-count">18 games</div>
+      </div>
+    </div>
+
+    <!-- Live Wins -->
+    <div class="live-wins-section">
+      <div class="live-wins-header">
+        <div class="live-indicator"></div>
+        <h2 class="live-wins-title">🎉 Live Wins</h2>
+      </div>
+      <div class="wins-container" id="winsContainer">
+        <!-- Wins will be dynamically added here -->
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Toggle Search Bar
+    function toggleSearch() {
+      const searchBar = document.getElementById('searchBar');
+      searchBar.classList.toggle('active');
+      if (searchBar.classList.contains('active')) {
+        document.getElementById('searchInput').focus();
+      }
+    }
+
+    function selectCategory(category) {
+      document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      alert(`Showing ${category} games`);
+    }
+
+    function playGame(gameName) {
+      alert(`Loading ${gameName}...\n\nGame demo coming soon!`);
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      if (searchTerm.length > 2) {
+        console.log('Searching for:', searchTerm);
+        // Here you would filter games based on search
+      }
+    });
+
+    // Live Wins System
+    const players = ['CryptoKing', 'LuckyAce', 'BetMaster', 'ProGamer', 'WhaleHunter', 'SpinLord', 'JackpotJoe', 'MegaWin', 'RoyalFlush', 'DiamondDave'];
+    const games = ['Crash', 'Dice', 'Mines', 'Plinko', 'Roulette', 'Blackjack', 'Book of Ra', 'Starburst', 'Mega Moolah', 'Gonzo Quest'];
+    const emojis = ['🚀', '🎲', '💣', '🎯', '🎰', '🃏', '📚', '⭐', '🦁', '🗿'];
+
+    let winsList = [];
+    const maxWins = 6;
+
+    function generateUserId() {
+      const prefix = ['SK', 'PL', 'GM', 'WN', 'BT'][Math.floor(Math.random() * 5)];
+      const number = Math.floor(Math.random() * 900000) + 100000;
+      return `${prefix}${number}`;
+    }
+
+    function generateWin() {
+      const player = players[Math.floor(Math.random() * players.length)];
+      const gameIndex = Math.floor(Math.random() * games.length);
+      const game = games[gameIndex];
+      const amount = (Math.random() * 100000 + 1000).toFixed(2);
+      const type = amount > 50000 ? 'mega' : amount > 20000 ? 'big' : 'normal';
+      const userId = generateUserId();
+      
+      return {
+        player,
+        userId,
+        game,
+        emoji: emojis[gameIndex],
+        amount: parseFloat(amount),
+        type,
+        timestamp: Date.now()
+      };
+    }
+
+    function formatINR(amount) {
+      const num = parseFloat(amount);
+      if (isNaN(num)) return '₹0.00';
+      
+      const [integer, decimal] = num.toFixed(2).split('.');
+      const lastThree = integer.slice(-3);
+      const otherNumbers = integer.slice(0, -3);
+      const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + (otherNumbers ? ',' : '') + lastThree;
+      
+      return `₹${formatted}.${decimal}`;
+    }
+
+    function addWin() {
+      const win = generateWin();
+      winsList.unshift(win);
+      
+      if (winsList.length > maxWins) {
+        winsList.pop();
+      }
+      
+      updateWinsDisplay();
+    }
+
+    function updateWinsDisplay() {
+      const container = document.getElementById('winsContainer');
+      container.innerHTML = winsList.map((win, index) => `
+        <div class="win-item ${win.type === 'mega' ? 'mega-win' : win.type === 'big' ? 'big-win' : ''}" style="animation-delay: ${index * 0.05}s">
+          <div class="win-info">
+            <span>${win.emoji}</span>
+            <div>
+              <div class="win-player">${win.player}</div>
+              <div class="win-user-id">ID: ${win.userId}</div>
+              <div class="win-game">${win.game}</div>
+            </div>
+          </div>
+          <div class="win-amount ${win.type === 'mega' ? 'mega' : win.type === 'big' ? 'big' : ''}">
+            ${formatINR(win.amount)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Initialize with some wins
+    for (let i = 0; i < 4; i++) {
+      winsList.push(generateWin());
+    }
+    updateWinsDisplay();
+
+    // Add new win every 4-6 seconds
+    setInterval(() => {
+      addWin();
+    }, Math.random() * 2000 + 4000);
+  </script>
+</body>
+</html>

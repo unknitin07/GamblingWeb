@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Withdraw - Stake Clone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #050810;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.06) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(34, 197, 94, 0.05) 0px, transparent 50%),
+        repeating-linear-gradient(45deg, transparent 0px, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px),
+        repeating-linear-gradient(-45deg, transparent 0px, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
+      background-attachment: fixed;
+      color: #e5e7eb;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* Header */
+    .header {
+      background: #1a1f2e;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: #38bdf8;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    .history-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Balance Card */
+    .balance-card {
+      margin: 20px;
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 12px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 
+                  0 0 20px rgba(56, 189, 248, 0.08),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .balance-label {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .balance-amount {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .refresh-icon {
+      font-size: 18px;
+      color: #38bdf8;
+      cursor: pointer;
+    }
+
+    .card-chip {
+      position: absolute;
+      bottom: 20px;
+      left: 24px;
+      width: 40px;
+      height: 30px;
+      background: rgba(156, 163, 175, 0.2);
+      border-radius: 4px;
+    }
+
+    .card-dots {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot-group {
+      display: flex;
+      gap: 2px;
+    }
+
+    .dot {
+      width: 4px;
+      height: 4px;
+      background: #6b7280;
+      border-radius: 50%;
+    }
+
+    /* Payment Method Section */
+    .section {
+      padding: 0 20px 20px;
+    }
+
+    .payment-method-card {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 15px rgba(56, 189, 248, 0.05),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .method-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .method-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2),
+                  0 0 8px rgba(56, 189, 248, 0.1),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .method-info h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f3f4f6;
+      margin-bottom: 2px;
+    }
+
+    .method-info p {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    /* Payment Options */
+    .payment-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .payment-option {
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 10px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2),
+                  0 0 8px rgba(56, 189, 248, 0.03);
+    }
+
+    .payment-option:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3),
+                  0 0 12px rgba(56, 189, 248, 0.08);
+    }
+
+    .payment-option.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4),
+                  0 0 15px rgba(56, 189, 248, 0.15),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .option-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2),
+                  0 0 6px rgba(56, 189, 248, 0.08),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .option-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: #d1d5db;
+    }
+
+    /* Bank Details */
+    .bank-details {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 12px rgba(56, 189, 248, 0.05),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .bank-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bank-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25),
+                  0 0 10px rgba(56, 189, 248, 0.1),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .bank-text h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f3f4f6;
+      margin-bottom: 4px;
+    }
+
+    .bank-text p {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .arrow-icon {
+      color: #6b7280;
+      font-size: 20px;
+    }
+
+    /* Amount Input */
+    .amount-section {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 12px rgba(56, 189, 248, 0.05),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .amount-label {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .amount-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15, 20, 30, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25),
+                  0 0 10px rgba(56, 189, 248, 0.04),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .rupee-symbol {
+      font-size: 18px;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .amount-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #f3f4f6;
+      font-size: 18px;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .amount-input::placeholder {
+      color: #6b7280;
+    }
+
+    .all-btn {
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2),
+                  0 0 6px rgba(56, 189, 248, 0.08);
+    }
+
+    .amount-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .info-label {
+      color: #9ca3af;
+    }
+
+    .info-value {
+      color: #f3f4f6;
+      font-weight: 600;
+    }
+
+    .info-value.highlight {
+      color: #22c55e;
+    }
+
+    /* Withdraw Button */
+    .withdraw-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #38bdf8, #10b981);
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      color: #0a0e13;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4),
+                  0 0 20px rgba(56, 189, 248, 0.15),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .withdraw-btn:hover {
+      background: linear-gradient(135deg, #22d3ee, #22c55e);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                  0 0 25px rgba(56, 189, 248, 0.2),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .withdraw-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Info Items */
+    .info-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+
+    .bullet {
+      color: #38bdf8;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .info-item .highlight {
+      color: #ef4444;
+      font-weight: 600;
+    }
+
+    .info-item .highlight-green {
+      color: #22c55e;
+      font-weight: 600;
+    }
+
+    /* Withdrawal History */
+    .history-section {
+      padding: 0 20px 20px;
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .history-icon {
+      font-size: 24px;
+    }
+
+    .history-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    .history-item {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                  0 0 10px rgba(56, 189, 248, 0.04),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .history-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .status-badge {
+      background: #dc2626;
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-completed {
+      background: #16a34a;
+    }
+
+    .history-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .detail-label {
+      color: #9ca3af;
+    }
+
+    .detail-value {
+      color: #f3f4f6;
+      font-weight: 600;
+    }
+
+    .detail-value.amount {
+      color: #f59e0b;
+    }
+
+    .order-number {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(56, 189, 248, 0.1);
+    }
+
+    .order-id {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .copy-icon {
+      color: #38bdf8;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #1a1f2e;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                  0 0 30px rgba(56, 189, 248, 0.1);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f3f4f6;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #9ca3af;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .modal-content {
+      margin-bottom: 20px;
+    }
+
+    .modal-field {
+      margin-bottom: 16px;
+    }
+
+    .modal-label {
+      display: block;
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .modal-input {
+      width: 100%;
+      background: rgba(15, 20, 30, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #f3f4f6;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .modal-input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+    }
+
+    .modal-input::placeholder {
+      color: #6b7280;
+    }
+
+    .modal-amount-display {
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-amount-label {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .modal-amount-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .modal-btn-cancel {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .modal-btn-cancel:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .modal-btn-confirm {
+      background: linear-gradient(135deg, #38bdf8, #10b981);
+      color: #0a0e13;
+      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.3);
+    }
+
+    .modal-btn-confirm:hover {
+      background: linear-gradient(135deg, #22d3ee, #22c55e);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+    }
+
+    .success-message {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .success-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #22c55e;
+      margin-bottom: 8px;
+    }
+
+    .success-text {
+      font-size: 14px;
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+
+    .success-details {
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .success-detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+    }
+
+    .success-detail-item:last-child {
+      border-bottom: none;
+    }
+
+    .success-detail-label {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .success-detail-value {
+      font-size: 13px;
+      color: #f3f4f6;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="window.history.back()">←</button>
+      <h1 class="header-title">Withdraw</h1>
+    </div>
+    <a href="#history" class="history-link" onclick="scrollToHistory(); return false;">Withdrawal history</a>
+  </header>
+
+  <!-- Balance Card -->
+  <div class="balance-card">
+    <div class="balance-label">
+      ⭐ Available balance
+    </div>
+    <div class="balance-amount">
+      ₹<span id="balanceAmount">1,25,050.36</span>
+      <span class="refresh-icon" onclick="refreshBalance()">🔄</span>
+    </div>
+    <div class="card-chip"></div>
+    <div class="card-dots">
+      <div class="dot-group">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <div class="dot-group">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Method -->
+  <section class="section">
+    <div class="payment-method-card">
+      <div class="method-header">
+        <div class="method-icon">⚡</div>
+        <div class="method-info">
+          <h3>ARPay</h3>
+          <p>Supports UPI for fast payment</p>
+        </div>
+      </div>
+      <div class="payment-options">
+        <div class="payment-option active" onclick="selectPaymentOption('BANK CARD')">
+          <div class="option-icon">💳</div>
+          <div class="option-name">BANK CARD</div>
+        </div>
+        <div class="payment-option" onclick="selectPaymentOption('UPI')">
+          <div class="option-icon">📱</div>
+          <div class="option-name">UPI</div>
+        </div>
+        <div class="payment-option" onclick="selectPaymentOption('USDT')">
+          <div class="option-icon">🪙</div>
+          <div class="option-name">USDT</div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Amount Input -->
+    <div class="amount-section">
+      <div class="amount-label">💵 Please enter the amount</div>
+      <div class="amount-input-wrapper">
+        <span class="rupee-symbol">₹</span>
+        <input type="number" class="amount-input" id="withdrawAmount" placeholder="Enter amount" min="0">
+        <button class="all-btn" onclick="setMaxAmount()">All</button>
+      </div>
+      <div class="amount-info">
+        <span class="info-label">Withdrawable balance</span>
+        <span class="info-value" id="withdrawableBalance">₹1,25,050.36</span>
+      </div>
+      <div class="amount-info">
+        <span class="info-label">Withdrawal amount received</span>
+        <span class="info-value highlight" id="receivedAmount">₹0.00</span>
+      </div>
+    </div>
+
+    <!-- Withdraw Button -->
+    <button class="withdraw-btn" onclick="processWithdraw()">Withdraw</button>
+
+    <!-- Info Items -->
+    <div class="info-items">
+      <div class="info-item">
+        <span class="bullet">◆</span>
+        <span>Need to bet <span class="highlight">₹0.00</span> to be able to withdraw</span>
+      </div>
+      <div class="info-item">
+        <span class="bullet">◆</span>
+        <span>Withdraw time <span class="highlight">00:00:23:59</span></span>
+      </div>
+      <div class="info-item">
+        <span class="bullet">◆</span>
+        <span>1day Remaining Withdrawal Times<span class="highlight-green">3</span></span>
+      </div>
+      <div class="info-item">
+        <span class="bullet">◆</span>
+        <span>Withdrawal amount range <span class="highlight-green">₹110.00-₹1,00,000.00</span></span>
+      </div>
+      <div class="info-item">
+        <span class="bullet">◆</span>
+        <span>Please confirm your beneficial account information before withdrawing. If your information is incorrect, our company will not be liable for the amount of loss</span>
+      </div>
+      <div class="info-item">
+        <span class="bullet">◆</span>
+        <span>If your beneficial information is incorrect, please contact customer service</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Withdrawal History -->
+  <section class="history-section" id="history">
+    <div class="history-header">
+      <span class="history-icon">📋</span>
+      <h2 class="history-title">Withdrawal history</h2>
+    </div>
+
+    <div class="history-item">
+      <div class="history-status">
+        <span class="status-badge">Withdraw</span>
+        <span class="status-completed">Completed</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Balance</span>
+          <span class="detail-value amount">₹7,099.00</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Type</span>
+          <span class="detail-value">USDT</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">2025-12-23 01:19:08</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">WD20251223011908282723838</span>
+          <span class="copy-icon" onclick="copyOrderNumber('WD20251223011908282723838')">📋</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-status">
+        <span class="status-badge">Withdraw</span>
+        <span class="status-completed">Completed</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Balance</span>
+          <span class="detail-value amount">₹8,391.00</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Type</span>
+          <span class="detail-value">USDT</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">2025-12-22 01:14:05</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">WD20251222011405312064l0c</span>
+          <span class="copy-icon" onclick="copyOrderNumber('WD20251222011405312064l0c')">📋</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-status">
+        <span class="status-badge">Withdraw</span>
+        <span class="status-completed">Completed</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Balance</span>
+          <span class="detail-value amount">₹15,720.00</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Type</span>
+          <span class="detail-value">USDT</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">2025-12-21 02:06:26</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">WD20251221020626374748Y5b</span>
+          <span class="copy-icon" onclick="copyOrderNumber('WD20251221020626374748Y5b')">📋</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-item">
+      <div class="history-status">
+        <span class="status-badge">Withdraw</span>
+        <span class="status-completed">Completed</span>
+      </div>
+      <div class="history-details">
+        <div class="detail-item">
+          <span class="detail-label">Balance</span>
+          <span class="detail-value amount">₹17,023.00</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Type</span>
+          <span class="detail-value">USDT</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time</span>
+          <span class="detail-value">2025-12-19 01:03:31</span>
+        </div>
+        <div class="order-number">
+          <span class="order-id">WD20251219010331314222468a</span>
+          <span class="copy-icon" onclick="copyOrderNumber('WD20251219010331314222468a')">📋</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Withdrawal Details Modal -->
+  <div class="modal-overlay" id="withdrawModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Withdrawal Details</h3>
+        <button class="modal-close" onclick="closeWithdrawModal()">×</button>
+      </div>
+      <div class="modal-content" id="modalContent">
+        <!-- Content will be dynamically inserted -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal">
+      <div class="success-icon">✓</div>
+      <div class="success-message">
+        <h3 class="success-title">Withdrawal Request Submitted!</h3>
+        <p class="success-text">Your withdrawal request has been successfully submitted and is being processed.</p>
+      </div>
+      <div class="success-details" id="successDetails">
+        <!-- Details will be inserted here -->
+      </div>
+      <button class="modal-btn modal-btn-confirm" onclick="closeSuccessModal()" style="width: 100%">Done</button>
+    </div>
+  </div>
+
+  <script>
+    let currentBalance = 125050.36;
+    let selectedPaymentMethod = 'BANK CARD';
+
+    function refreshBalance() {
+      const icon = event.target;
+      icon.style.transform = 'rotate(360deg)';
+      icon.style.transition = 'transform 0.5s ease';
+      setTimeout(() => {
+        icon.style.transform = 'rotate(0deg)';
+      }, 500);
+      alert('Balance refreshed!');
+    }
+
+    function selectPaymentOption(option) {
+      selectedPaymentMethod = option;
+      document.querySelectorAll('.payment-option').forEach(el => {
+        el.classList.remove('active');
+      });
+      event.target.closest('.payment-option').classList.add('active');
+    }
+
+    function setMaxAmount() {
+      document.getElementById('withdrawAmount').value = currentBalance;
+      updateReceivedAmount();
+    }
+
+    function updateReceivedAmount() {
+      const amount = parseFloat(document.getElementById('withdrawAmount').value) || 0;
+      document.getElementById('receivedAmount').textContent = formatINR(amount);
+    }
+
+    function formatINR(amount) {
+      const num = parseFloat(amount);
+      if (isNaN(num)) return '₹0.00';
+      
+      const [integer, decimal] = num.toFixed(2).split('.');
+      const lastThree = integer.slice(-3);
+      const otherNumbers = integer.slice(0, -3);
+      const formatted = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + (otherNumbers ? ',' : '') + lastThree;
+      
+      return `₹${formatted}.${decimal}`;
+    }
+
+    function processWithdraw() {
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+      
+      if (!amount || amount <= 0) {
+        alert('Please enter a valid withdrawal amount');
+        return;
+      }
+
+      if (amount < 110) {
+        alert('Minimum withdrawal amount is ₹110.00');
+        return;
+      }
+
+      if (amount > 100000) {
+        alert('Maximum withdrawal amount is ₹1,00,000.00');
+        return;
+      }
+
+      if (amount > currentBalance) {
+        alert('Insufficient balance');
+        return;
+      }
+
+      showWithdrawModal(amount);
+    }
+
+    function showWithdrawModal(amount) {
+      const modalContent = document.getElementById('modalContent');
+      let formHTML = '';
+
+      if (selectedPaymentMethod === 'BANK CARD') {
+        formHTML = `
+          <div class="modal-amount-display" style="margin-bottom: 20px;">
+            <span class="modal-amount-label">Withdrawal Amount</span>
+            <span class="modal-amount-value">${formatINR(amount)}</span>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Bank Name</label>
+            <input type="text" class="modal-input" id="bankName" placeholder="Enter bank name" required>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Account Number</label>
+            <input type="text" class="modal-input" id="accountNumber" placeholder="Enter account number" required>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">IFSC Code</label>
+            <input type="text" class="modal-input" id="ifscCode" placeholder="Enter IFSC code" required>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Account Holder Name</label>
+            <input type="text" class="modal-input" id="holderName" placeholder="Enter account holder name" required>
+          </div>
+          <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeWithdrawModal()">Cancel</button>
+            <button class="modal-btn modal-btn-confirm" onclick="confirmWithdraw(${amount})">Confirm</button>
+          </div>
+        `;
+      } else if (selectedPaymentMethod === 'UPI') {
+        formHTML = `
+          <div class="modal-amount-display" style="margin-bottom: 20px;">
+            <span class="modal-amount-label">Withdrawal Amount</span>
+            <span class="modal-amount-value">${formatINR(amount)}</span>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">UPI ID</label>
+            <input type="text" class="modal-input" id="upiId" placeholder="Enter UPI ID (e.g., yourname@paytm)" required>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Confirm UPI ID</label>
+            <input type="text" class="modal-input" id="confirmUpiId" placeholder="Re-enter UPI ID" required>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Account Holder Name</label>
+            <input type="text" class="modal-input" id="holderName" placeholder="Enter account holder name" required>
+          </div>
+          <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeWithdrawModal()">Cancel</button>
+            <button class="modal-btn modal-btn-confirm" onclick="confirmWithdraw(${amount})">Confirm</button>
+          </div>
+        `;
+      } else if (selectedPaymentMethod === 'USDT') {
+        formHTML = `
+          <div class="modal-amount-display" style="margin-bottom: 20px;">
+            <span class="modal-amount-label">Withdrawal Amount</span>
+            <span class="modal-amount-value">${formatINR(amount)}</span>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">USDT Wallet Address</label>
+            <input type="text" class="modal-input" id="walletAddress" placeholder="Enter USDT wallet address" required>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Network</label>
+            <select class="modal-input" id="network" required>
+              <option value="">Select network</option>
+              <option value="TRC20">TRC20</option>
+              <option value="ERC20">ERC20</option>
+              <option value="BEP20">BEP20</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Confirm Wallet Address</label>
+            <input type="text" class="modal-input" id="confirmWallet" placeholder="Re-enter wallet address" required>
+          </div>
+          <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeWithdrawModal()">Cancel</button>
+            <button class="modal-btn modal-btn-confirm" onclick="confirmWithdraw(${amount})">Confirm</button>
+          </div>
+        `;
+      }
+
+      modalContent.innerHTML = formHTML;
+      document.getElementById('withdrawModal').classList.add('active');
+    }
+
+    function closeWithdrawModal() {
+      document.getElementById('withdrawModal').classList.remove('active');
+    }
+
+    function confirmWithdraw(amount) {
+      let isValid = true;
+      let withdrawalDetails = {};
+
+      if (selectedPaymentMethod === 'BANK CARD') {
+        const bankName = document.getElementById('bankName').value.trim();
+        const accountNumber = document.getElementById('accountNumber').value.trim();
+        const ifscCode = document.getElementById('ifscCode').value.trim();
+        const holderName = document.getElementById('holderName').value.trim();
+
+        if (!bankName || !accountNumber || !ifscCode || !holderName) {
+          alert('Please fill in all fields');
+          return;
+        }
+
+        withdrawalDetails = {
+          method: 'BANK CARD',
+          bankName,
+          accountNumber,
+          ifscCode,
+          holderName,
+          amount
+        };
+
+      } else if (selectedPaymentMethod === 'UPI') {
+        const upiId = document.getElementById('upiId').value.trim();
+        const confirmUpiId = document.getElementById('confirmUpiId').value.trim();
+        const holderName = document.getElementById('holderName').value.trim();
+
+        if (!upiId || !confirmUpiId || !holderName) {
+          alert('Please fill in all fields');
+          return;
+        }
+
+        if (upiId !== confirmUpiId) {
+          alert('UPI IDs do not match');
+          return;
+        }
+
+        withdrawalDetails = {
+          method: 'UPI',
+          upiId,
+          holderName,
+          amount
+        };
+
+      } else if (selectedPaymentMethod === 'USDT') {
+        const walletAddress = document.getElementById('walletAddress').value.trim();
+        const network = document.getElementById('network').value;
+        const confirmWallet = document.getElementById('confirmWallet').value.trim();
+
+        if (!walletAddress || !network || !confirmWallet) {
+          alert('Please fill in all fields');
+          return;
+        }
+
+        if (walletAddress !== confirmWallet) {
+          alert('Wallet addresses do not match');
+          return;
+        }
+
+        withdrawalDetails = {
+          method: 'USDT',
+          walletAddress,
+          network,
+          amount
+        };
+      }
+
+      closeWithdrawModal();
+      showSuccessModal(withdrawalDetails);
+    }
+
+    function showSuccessModal(details) {
+      const successDetails = document.getElementById('successDetails');
+      const orderNumber = generateOrderNumber();
+      const currentTime = new Date().toLocaleString('en-IN', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+
+      let detailsHTML = `
+        <div class="success-detail-item">
+          <span class="success-detail-label">Amount</span>
+          <span class="success-detail-value">${formatINR(details.amount)}</span>
+        </div>
+        <div class="success-detail-item">
+          <span class="success-detail-label">Payment Method</span>
+          <span class="success-detail-value">${details.method}</span>
+        </div>
+      `;
+
+      if (details.method === 'BANK CARD') {
+        detailsHTML += `
+          <div class="success-detail-item">
+            <span class="success-detail-label">Bank</span>
+            <span class="success-detail-value">${details.bankName}</span>
+          </div>
+          <div class="success-detail-item">
+            <span class="success-detail-label">Account</span>
+            <span class="success-detail-value">****${details.accountNumber.slice(-4)}</span>
+          </div>
+        `;
+      } else if (details.method === 'UPI') {
+        detailsHTML += `
+          <div class="success-detail-item">
+            <span class="success-detail-label">UPI ID</span>
+            <span class="success-detail-value">${details.upiId}</span>
+          </div>
+        `;
+      } else if (details.method === 'USDT') {
+        detailsHTML += `
+          <div class="success-detail-item">
+            <span class="success-detail-label">Network</span>
+            <span class="success-detail-value">${details.network}</span>
+          </div>
+          <div class="success-detail-item">
+            <span class="success-detail-label">Wallet</span>
+            <span class="success-detail-value">${details.walletAddress.slice(0, 6)}...${details.walletAddress.slice(-4)}</span>
+          </div>
+        `;
+      }
+
+      detailsHTML += `
+        <div class="success-detail-item">
+          <span class="success-detail-label">Order ID</span>
+          <span class="success-detail-value">${orderNumber}</span>
+        </div>
+        <div class="success-detail-item">
+          <span class="success-detail-label">Time</span>
+          <span class="success-detail-value">${currentTime}</span>
+        </div>
+      `;
+
+      successDetails.innerHTML = detailsHTML;
+      document.getElementById('successModal').classList.add('active');
+
+      // Update balance
+      currentBalance -= details.amount;
+      document.getElementById('balanceAmount').textContent = currentBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('withdrawableBalance').textContent = formatINR(currentBalance);
+      document.getElementById('withdrawAmount').value = '';
+      updateReceivedAmount();
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('successModal').classList.remove('active');
+    }
+
+    function generateOrderNumber() {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+      const random = Math.random().toString(36).substring(2, 11);
+      return `WD${year}${month}${day}${hours}${minutes}${seconds}${random}`;
+    }
+
+    function copyOrderNumber(orderId) {
+      navigator.clipboard.writeText(orderId).then(() => {
+        alert('Order number copied to clipboard!');
+      });
+    }
+
+    function scrollToHistory() {
+      document.getElementById('history').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Update received amount on input
+    document.getElementById('withdrawAmount').addEventListener('input', updateReceivedAmount);
+  </script>
+</body>
+</html>
